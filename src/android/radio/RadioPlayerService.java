@@ -548,7 +548,7 @@ public class RadioPlayerService extends Service {
         Log.v(LOG_TAG, "RadioPlayerService : " + log);
     }
 
-    public  int getDuration() {
-        return (int) this.mRadioPlayer.getDuration();
+    public long getDuration() {
+        return this.mRadioPlayer.getDuration();
     }
 }

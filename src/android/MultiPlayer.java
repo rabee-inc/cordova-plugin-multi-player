@@ -15,7 +15,6 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
     private boolean isConnecting = false;
     private boolean isConnected = false;
     private JSONArray requestedPlay = null;
-    private int duration = 0;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -85,8 +84,8 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
             callbackContext.success();
             return true;
         } else if ("getDuration".equals(action)) {
-            duration = this.mRadioManager.getDuration();
-            callbackContext.success(duration);
+            callbackContext.success(this.mRadioManager.getDuration());
+            return true;
             return true;
         }
 

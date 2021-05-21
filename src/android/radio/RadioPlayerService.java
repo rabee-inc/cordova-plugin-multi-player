@@ -555,4 +555,8 @@ public class RadioPlayerService extends Service {
     public long getCurrentPosition() {
         return this.mRadioPlayer.getCurrentPosition();
     }
+
+    public void seekTo(long pos) {
+        this.mRadioPlayer.seekTo(pos);
+    }
 }

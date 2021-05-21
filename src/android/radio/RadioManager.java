@@ -250,4 +250,10 @@ public class RadioManager implements IRadioManager {
         }
         return -1;
     }
+
+    public void seekTo(long pos) {
+        if (this.isServiceConnected) {
+            this.mService.seekTo(pos);
+        }
+    }
 }

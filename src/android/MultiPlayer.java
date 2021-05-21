@@ -89,6 +89,10 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
         } else if ("getCurrentPosition".equals(action)) {
             callbackContext.success(this.mRadioManager.getCurrentPosition());
             return true;
+        } else if ("seekTo".equals(action)) {
+            this.mRadioManager.seekTo(args.getLong(0));
+            callbackContext.success();
+            return true;
         }
 
         log("Called invalid action: " + action);

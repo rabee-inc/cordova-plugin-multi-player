@@ -243,4 +243,11 @@ public class RadioManager implements IRadioManager {
         }
         return -1;
     }
+
+    public long getCurrentPosition() {
+        if (this.isServiceConnected) {
+            return this.mService.getCurrentPosition();
+        }
+        return -1;
+    }
 }

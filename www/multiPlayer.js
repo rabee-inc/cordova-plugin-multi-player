@@ -20,6 +20,7 @@ var MultiPlayer = (function () {
         },
         stop: null,
         getDuration: null,
+        getCurrentPosition: null,
     };
 
     for (let key in methods) {

@@ -551,4 +551,8 @@ public class RadioPlayerService extends Service {
     public long getDuration() {
         return this.mRadioPlayer.getDuration();
     }
+
+    public long getCurrentPosition() {
+        return this.mRadioPlayer.getCurrentPosition();
+    }
 }

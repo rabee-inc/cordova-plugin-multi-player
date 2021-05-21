@@ -1,6 +1,9 @@
 package com.eltonfaust.multiplayer;
 
 import android.util.Log;
+
+import com.google.android.exoplayer2.C;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -84,10 +87,16 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
             callbackContext.success();
             return true;
         } else if ("getDuration".equals(action)) {
-            callbackContext.success(this.mRadioManager.getDuration());
+            long duration = this.mRadioManager.getDuration();
+            if (C.TIME_UNSET == duration) duration = -1;
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, duration);
+            callbackContext.sendPluginResult(pluginResult);
             return true;
         } else if ("getCurrentPosition".equals(action)) {
-            callbackContext.success(this.mRadioManager.getCurrentPosition());
+            long pos = this.mRadioManager.getCurrentPosition();
+            if (C.TIME_UNSET == pos) pos = -1;
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, pos);
+            callbackContext.sendPluginResult(pluginResult);
             return true;
         } else if ("seekTo".equals(action)) {
             this.mRadioManager.seekTo(args.getLong(0));

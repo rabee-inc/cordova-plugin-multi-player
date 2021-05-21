@@ -549,20 +549,22 @@ public class RadioPlayerService extends Service {
     }
 
     public long getDuration() {
-        return this.mRadioPlayer.getDuration();
+        return this.mRadioPlayer != null ? this.mRadioPlayer.getDuration() : -1;
     }
 
     public long getCurrentPosition() {
-        return this.mRadioPlayer.getCurrentPosition();
+        return this.mRadioPlayer != null ? this.mRadioPlayer.getCurrentPosition() : -1;
     }
 
     public void seekTo(long pos) {
-        this.mRadioPlayer.seekTo(pos);
+        if (this.mRadioPlayer != null ) this.mRadioPlayer.seekTo(pos);
     }
 
     public void setPlaybackRate(double rate) {
-        PlaybackParameters params = new PlaybackParameters((float) rate);
-        this.mRadioPlayer.setPlaybackParameters(params);
+        if (this.mRadioPlayer != null ) {
+            PlaybackParameters params = new PlaybackParameters((float) rate);
+            this.mRadioPlayer.setPlaybackParameters(params);
+        }
     }
 
 }

@@ -18,6 +18,7 @@ var MultiPlayer = (function () {
             }
             return [streamType];
         },
+        pause: null,
         stop: null,
         getDuration: null,
         getCurrentPosition: null,

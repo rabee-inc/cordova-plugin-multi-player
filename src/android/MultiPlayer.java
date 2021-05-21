@@ -77,6 +77,10 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
 
             callbackContext.success();
             return true;
+        } else if ("pause".equals(action)) {
+            this.mRadioManager.pause();
+            callbackContext.success();
+            return true;
         } else if ("stop".equals(action)) {
             this.requestedPlay = null;
 

@@ -262,4 +262,10 @@ public class RadioManager implements IRadioManager {
             this.mService.setPlaybackRate(rate);
         }
     }
+
+    public void pause() {
+        if (this.isServiceConnected) {
+            this.mService.pause();
+        }
+    }
 }

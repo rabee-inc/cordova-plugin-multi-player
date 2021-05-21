@@ -567,4 +567,10 @@ public class RadioPlayerService extends Service {
         }
     }
 
+    public void pause() {
+        if (this.mRadioPlayer != null ) {
+            this.mRadioPlayer.setPlayWhenReady(false);
+        }
+    }
+
 }

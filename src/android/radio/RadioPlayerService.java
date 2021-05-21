@@ -559,4 +559,10 @@ public class RadioPlayerService extends Service {
     public void seekTo(long pos) {
         this.mRadioPlayer.seekTo(pos);
     }
+
+    public void setPlaybackRate(double rate) {
+        PlaybackParameters params = new PlaybackParameters((float) rate);
+        this.mRadioPlayer.setPlaybackParameters(params);
+    }
+
 }

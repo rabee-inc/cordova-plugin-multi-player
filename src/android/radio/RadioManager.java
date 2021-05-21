@@ -256,4 +256,10 @@ public class RadioManager implements IRadioManager {
             this.mService.seekTo(pos);
         }
     }
+
+    public void setPlaybackRate(double rate) {
+        if (this.isServiceConnected) {
+            this.mService.setPlaybackRate(rate);
+        }
+    }
 }

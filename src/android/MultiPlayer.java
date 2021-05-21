@@ -15,6 +15,7 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
 
     private RadioManager mRadioManager = null;
     private CallbackContext connectionCallbackContext;
+    private CallbackContext onEndedCallbackContext;
     private boolean isConnecting = false;
     private boolean isConnected = false;
     private JSONArray requestedPlay = null;
@@ -114,6 +115,12 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
             this.mRadioManager.setPlaybackRate(args.getDouble(0));
             callbackContext.success();
             return true;
+        } else if ("setOnEnded".equals(action)) {
+            onEndedCallbackContext = callbackContext;
+            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+            result.setKeepCallback(true);
+            callbackContext.sendPluginResult(result);
+            return true;
         }
 
         log("Called invalid action: " + action);
@@ -171,6 +178,16 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
     public void onDestroy() {
         if (this.mRadioManager != null) {
             this.mRadioManager.disconnect();
+        }
+    }
+
+    @Override
+    public void onRadioEnded() {
+        this.mRadioManager.pause();
+        if (onEndedCallbackContext != null) {
+            PluginResult result = new PluginResult(PluginResult.Status.OK);
+            result.setKeepCallback(true);
+            onEndedCallbackContext.sendPluginResult(result);
         }
     }
 

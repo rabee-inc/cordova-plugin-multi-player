@@ -24,6 +24,7 @@ var MultiPlayer = (function () {
         getCurrentPosition: null,
         seekTo: null,
         setPlaybackRate: null,
+        setOnEnded: null,
     };
 
     for (let key in methods) {

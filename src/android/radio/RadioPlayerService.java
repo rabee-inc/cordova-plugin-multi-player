@@ -313,6 +313,14 @@ public class RadioPlayerService extends Service {
         }
     }
 
+    private void notifyRadioEnded() {
+        for (RadioListener mRadioListener : this.mListenerList) {
+            mRadioListener.onRadioEnded();
+        }
+    }
+
+
+
     private void notifyRadioStoppedFocusLoss() {
         for (RadioListener mRadioListener : mListenerList) {
             mRadioListener.onRadioStoppedFocusLoss();
@@ -409,12 +417,18 @@ public class RadioPlayerService extends Service {
                 // Player.STATE_IDLE: This is the initial state, the state when the player is stopped, and when playback failed.
                 RadioPlayerService.this.log("Player state changed. Stopped");
                 RadioPlayerService.this.releasePlayer();
+                RadioPlayerService.this.notifyRadioEnded();
                 RadioPlayerService.this.notifyRadioStopped();
             } else if (playbackState == ExoPlayer.STATE_IDLE && RadioPlayerService.this.mRadioState == State.STOPPED_FOCUS_LOSS) {
                 // focus loss, notify and set state to STOPPED
                 RadioPlayerService.this.log("Player state changed. Stopped focus loss");
                 RadioPlayerService.this.releasePlayer();
+                RadioPlayerService.this.notifyRadioEnded();
                 RadioPlayerService.this.notifyRadioStoppedFocusLoss();
+            } else if (playWhenReady && playbackState == Player.STATE_ENDED) {
+                // When it is played to the end
+                RadioPlayerService.this.log("Player state changed. Ended");
+                RadioPlayerService.this.notifyRadioEnded();
             } else {
                 RadioPlayerService.this.log("Player state changed. ExoPlayer State: " + playbackState + ", Current state: " + RadioPlayerService.this.mRadioState);
             }

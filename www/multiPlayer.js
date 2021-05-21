@@ -4,9 +4,7 @@ var MultiPlayer = (function () {
         this.STREAM_MUSIC = 3;
         this.STREAM_ALARM = 4;
     }
-    const noop = () => { };
-
-    const exec = (successCallback = noop, failureCallback = noop, name, args) => {
+    const exec = (successCallback, failureCallback, name, args) => {
         cordova.exec(successCallback, failureCallback, 'MultiPlayer', name, args);
     };
 
@@ -25,12 +23,26 @@ var MultiPlayer = (function () {
     };
 
     for (let key in methods) {
-        MultiPlayerConstruct.prototype[key] = function(successCallback = noop, failureCallback = noop, ...args) {
+        MultiPlayerConstruct.prototype[key] = function(...args) {
             const func = methods[key];
-            if (func) {
-                args = func(...args);
+            if (typeof args[0] === 'function') {
+                // callback pattern
+                const successCallback = args[0];
+                const failureCallback = args[1];
+                const func = methods[key];
+                if (func) {
+                    args = func(...args.slice(2));
+                }
+                exec(successCallback, failureCallback, key, args);
+            } else {
+                // promise pattern
+                return new Promise((resolve, reject) => {
+                    if (func) {
+                        args = func(...args);
+                    }
+                    exec(resolve, reject, key, args);
+                });
             }
-            exec(successCallback, failureCallback, key, args);
         }
     }
 

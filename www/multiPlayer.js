@@ -30,8 +30,8 @@ var MultiPlayer = (function () {
             const func = methods[key];
             if (typeof args[0] === 'function') {
                 // callback pattern
-                const successCallback = args[0];
-                const failureCallback = args[1];
+                const successCallback = args.shift();
+                const failureCallback = args.shift();
                 if (func) {
                     args = func(...args.slice(2));
                 }

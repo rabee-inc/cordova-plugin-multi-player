@@ -1,5 +1,7 @@
 package com.eltonfaust.multiplayer;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.android.exoplayer2.C;
@@ -25,26 +27,32 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
         log("ACTION - " + action);
 
         if ("initialize".equals(action)) {
-            try {
-                this.mRadioManager = RadioManager.with(this.cordova.getActivity(), this);
-                this.mRadioManager.setStreamURL(args.getString(0));
+            Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+            mainThreadHandler.post(() -> {
+                try {
+                    this.mRadioManager = RadioManager.with(this.cordova.getActivity(), this);
+                    this.mRadioManager.setStreamURL(args.getString(0));
 
-                this.connectionCallbackContext = callbackContext;
+                    this.connectionCallbackContext = callbackContext;
 
-                PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
-                pluginResult.setKeepCallback(true);
+                    PluginResult pluginResult = new PluginResult(PluginResult.Status.NO_RESULT);
+                    pluginResult.setKeepCallback(true);
 
-                callbackContext.sendPluginResult(pluginResult);
-                return true;
-            } catch (Exception e) {
-                log("Exception occurred: ".concat(e.getMessage()));
-                callbackContext.error(e.getMessage());
-                return false;
-            }
+                    callbackContext.sendPluginResult(pluginResult);
+                    callbackContext.success();
+                } catch (Exception e) {
+                    log("Exception occurred: ".concat(e.getMessage()));
+                    callbackContext.error(e.getMessage());
+                }
+            });
+            return true;
         } else if ("connect".equals(action)) {
             if (!this.isConnected && !this.isConnecting) {
                 this.isConnecting = true;
-                this.mRadioManager.connect();
+                Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+                mainThreadHandler.post(() -> {
+                    this.mRadioManager.connect();
+                });
             }
 
             callbackContext.success();
@@ -55,10 +63,13 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
             if (this.isConnecting || this.isConnected) {
                 this.isConnecting = false;
                 this.isConnected = false;
-                this.mRadioManager.disconnect();
 
-                log("RADIO STATE - DISCONNECTED...");
-                this.sendListenerResult("DISCONNECTED");
+                Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+                mainThreadHandler.post(() -> {
+                    this.mRadioManager.disconnect();
+                    log("RADIO STATE - DISCONNECTED...");
+                    this.sendListenerResult("DISCONNECTED");
+                });
             }
 
             callbackContext.success();
@@ -67,59 +78,94 @@ public class MultiPlayer extends CordovaPlugin implements RadioListener {
             if (!this.isConnected) {
                 if (!this.isConnecting) {
                     this.isConnecting = true;
-                    this.mRadioManager.connect();
+
+                    Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+                    mainThreadHandler.post(() -> {
+                        this.mRadioManager.connect();
+                    });
                 }
 
                 this.requestedPlay = args;
             } else {
                 this.requestedPlay = null;
-                this.mRadioManager.startRadio(args.getInt(0));
+
+                Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+                int type = args.getInt(0);
+                mainThreadHandler.post(() -> {
+                    this.mRadioManager.startRadio(type);
+                });
             }
 
             callbackContext.success();
             return true;
         } else if ("pause".equals(action)) {
-            this.mRadioManager.pause();
-            callbackContext.success();
+            Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+            mainThreadHandler.post(() -> {
+                this.mRadioManager.pause();
+                callbackContext.success();
+            });
             return true;
         } else if ("stop".equals(action)) {
+
             this.requestedPlay = null;
 
             if (this.isConnected) {
-               this.mRadioManager.stopRadio();
+                Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+                mainThreadHandler.post(() -> {
+                    this.mRadioManager.stopRadio();
+                    callbackContext.success();
+                });
             }
-
-            callbackContext.success();
+            else {
+                callbackContext.success();
+            }
             return true;
         } else if ("getDuration".equals(action)) {
-            long duration = this.mRadioManager.getDuration();
-            if (C.TIME_UNSET == duration) duration = -1;
-            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, duration);
-            callbackContext.sendPluginResult(pluginResult);
+            Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+            mainThreadHandler.post(() -> {
+                long duration = this.mRadioManager.getDuration();
+                if (C.TIME_UNSET == duration) duration = -1;
+                PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, duration);
+                callbackContext.sendPluginResult(pluginResult);
+            });
             return true;
         } else if ("getCurrentPosition".equals(action)) {
-            long pos = this.mRadioManager.getCurrentPosition();
-            if (C.TIME_UNSET == pos) pos = -1;
-            long duration = mRadioManager.getDuration();
-            if (duration < pos) {
-                pos = duration;
-            }
-            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, pos);
-            callbackContext.sendPluginResult(pluginResult);
+            Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+            mainThreadHandler.post(() -> {
+                long pos = this.mRadioManager.getCurrentPosition();
+                if (C.TIME_UNSET == pos) pos = -1;
+                long duration = mRadioManager.getDuration();
+                if (duration < pos) {
+                    pos = duration;
+                }
+                PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, pos);
+                callbackContext.sendPluginResult(pluginResult);
+            });
             return true;
         } else if ("seekTo".equals(action)) {
-            this.mRadioManager.seekTo(args.getLong(0));
-            callbackContext.success();
+            long time = args.getLong(0);
+            Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+            mainThreadHandler.post(() -> {
+                this.mRadioManager.seekTo(time);
+                callbackContext.success();
+            });
             return true;
         } else if ("setPlaybackRate".equals(action)) {
-            this.mRadioManager.setPlaybackRate(args.getDouble(0));
-            callbackContext.success();
+            double rate = args.getDouble(0);
+            Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+            mainThreadHandler.post(() -> {
+                this.mRadioManager.setPlaybackRate(rate);
+                callbackContext.success();
+            });
             return true;
         } else if ("setOnEnded".equals(action)) {
             onEndedCallbackContext = callbackContext;
-            PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
-            result.setKeepCallback(true);
-            callbackContext.sendPluginResult(result);
+            Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+            mainThreadHandler.post(() -> {
+                PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
+            });
             return true;
         }
 

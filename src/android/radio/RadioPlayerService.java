@@ -3,36 +3,33 @@ package com.eltonfaust.multiplayer;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.service.notification.StatusBarNotification;
-import androidx.annotation.RequiresApi;
 import android.util.Log;
-import android.widget.RemoteViews;
 
-import com.google.android.exoplayer2.*;
-import com.google.android.exoplayer2.extractor.*;
-import com.google.android.exoplayer2.source.*;
-import com.google.android.exoplayer2.source.dash.*;
-import com.google.android.exoplayer2.source.hls.*;
-import com.google.android.exoplayer2.source.smoothstreaming.*;
-import com.google.android.exoplayer2.trackselection.*;
-import com.google.android.exoplayer2.ui.*;
-import com.google.android.exoplayer2.upstream.*;
-import com.google.android.exoplayer2.util.*;
+import androidx.annotation.RequiresApi;
+
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -340,17 +337,18 @@ public class RadioPlayerService extends Service {
      */
     private SimpleExoPlayer getPlayer(boolean changeAudioStreamType) {
         if (this.mRadioPlayer == null) {
-            DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            LoadControl loadControl = new DefaultLoadControl();
+//            DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+//            TrackSelector trackSelector = new DefaultTrackSelector();
+//            LoadControl loadControl = new DefaultLoadControl();
 
-            this.mRadioPlayer = ExoPlayerFactory.newSimpleInstance(this.getApplicationContext(), trackSelector, loadControl);
+//            this.mRadioPlayer = ExoPlayerFactory.newSimpleInstance(this.getApplicationContext(), trackSelector, loadControl);
+            this.mRadioPlayer = new SimpleExoPlayer.Builder(this.getApplicationContext()).build();
             this.mRadioPlayer.addListener(this.playerEventListener);
 
             DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), "CordovaMultiPlayer");
-            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+//            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
 
-            Handler mainHandler = new Handler();
+//            Handler mainHandler = new Handler();
             MediaSource mediaSource = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(this.mRadioUrl));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

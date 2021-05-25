@@ -237,10 +237,35 @@ public class RadioManager implements IRadioManager {
         Log.v(LOG_TAG, "RadioManager : " + log);
     }
 
-    public int getDuration() {
+    public long getDuration() {
         if (this.isServiceConnected) {
             return this.mService.getDuration();
         }
         return -1;
+    }
+
+    public long getCurrentPosition() {
+        if (this.isServiceConnected) {
+            return this.mService.getCurrentPosition();
+        }
+        return -1;
+    }
+
+    public void seekTo(long pos) {
+        if (this.isServiceConnected) {
+            this.mService.seekTo(pos);
+        }
+    }
+
+    public void setPlaybackRate(double rate) {
+        if (this.isServiceConnected) {
+            this.mService.setPlaybackRate(rate);
+        }
+    }
+
+    public void pause() {
+        if (this.isServiceConnected) {
+            this.mService.pause();
+        }
     }
 }
